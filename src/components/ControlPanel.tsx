@@ -130,7 +130,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
 
           <div className="form-row date-row">
             <div>
-              <label htmlFor="startDate">Start date</label>
+              <label htmlFor="startDate">Start date </label>
               <input
                 id="startDate"
                 type="date"
@@ -140,7 +140,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
               {errors.startDate && <span className="error">{errors.startDate}</span>}
             </div>
             <div>
-              <label htmlFor="endDate">End date</label>
+              <label htmlFor="endDate">End date </label>
               <input
                 id="endDate"
                 type="date"
@@ -151,16 +151,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
             </div>
           </div>
 
-          <div className="form-row">
-            <label htmlFor="category">Category (optional)</label>
-            <input
-              id="category"
-              type="text"
-              value={form.category}
-              onChange={(e) => setForm({ ...form, category: e.target.value })}
-              placeholder="e.g. Archery, Firearm"
-            />
-          </div>
+
 
           <div className="form-row">
             <label>Color</label>
