@@ -9,10 +9,6 @@ interface SummaryCardProps {
 export const SummaryCard: React.FC<SummaryCardProps> = ({ ranges }) => {
   const enabledRanges = ranges.filter((r) => r.enabled);
   const total = ranges.length;
-  const active = enabledRanges.length;
-
-  // Count total sub-ranges
-  const totalSubRanges = ranges.reduce((sum, r) => sum + r.ranges.length, 0);
   const activeSubRanges = enabledRanges.reduce((sum, r) => sum + r.ranges.length, 0);
 
   let earliest: string | null = null;

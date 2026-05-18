@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useRef } from 'react';
 import type { SeasonRange } from '../types';
 import './Timeline.css';
-import { CATEGORIES } from '../data/seed';
+
 
 interface TimelineProps {
   ranges: SeasonRange[];
@@ -30,10 +30,6 @@ function formatMonth(date: Date): string {
   return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
 }
 
-function formatShortDate(dateStr: string): string {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-}
 
 export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
   const enabled = ranges.filter((r) => r.enabled);
