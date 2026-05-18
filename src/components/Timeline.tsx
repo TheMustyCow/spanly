@@ -17,7 +17,7 @@ function parseDate(str: string): Date {
 
 function daysBetween(a: Date, b: Date): number {
   const msPerDay = 1000 * 60 * 60 * 24;
-  return (b.getTime() - a.getTime()) / msPerDay;
+  return Math.round((b.getTime() - a.getTime()) / msPerDay);
 }
 
 function addDays(date: Date, days: number): Date {
