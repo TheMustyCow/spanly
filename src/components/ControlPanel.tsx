@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { SeasonRange } from '../types';
+import type { SeasonRange, SubRange } from '../types';
 import { DEFAULT_COLORS, CATEGORIES } from '../data/seed';
 import { Dialog } from './Dialog';
 import './ControlPanel.css';
@@ -13,16 +13,25 @@ function getDefaultColor(ranges: SeasonRange[]): string {
   return DEFAULT_COLORS[ranges.length % DEFAULT_COLORS.length];
 }
 
-const emptyFormBase = {
+function makeEmptySubRange(): SubRange {
+  return {
+    id: crypto.randomUUID(),
+    label: '',
+    startDate: '',
+    endDate: '',
+  };
+}
+
+const emptyFormState = {
   name: '',
-  startDate: '',
-  endDate: '',
+  ranges: [makeEmptySubRange()] as SubRange[],
   category: '',
+  color: '',
 };
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState({ ...emptyFormBase, color: getDefaultColor(ranges) });
+  const [form, setForm] = useState({ ...emptyFormState, color: getDefaultColor(ranges) });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -32,25 +41,31 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
       if (item) {
         setForm({
           name: item.name,
-          startDate: item.startDate,
-          endDate: item.endDate,
+          ranges: item.ranges.map((sr) => ({ ...sr })),
           category: item.category,
           color: item.color,
         });
       }
     } else {
-      setForm({ ...emptyFormBase, color: getDefaultColor(ranges) });
+      setForm({ ...emptyFormState, color: getDefaultColor(ranges) });
     }
   }, [editingId, ranges]);
 
   function validate(): boolean {
     const nextErrors: Record<string, string> = {};
     if (!form.name.trim()) nextErrors.name = 'Name is required';
-    if (!form.startDate) nextErrors.startDate = 'Start date is required';
-    if (!form.endDate) nextErrors.endDate = 'End date is required';
-    if (form.startDate && form.endDate && form.startDate > form.endDate) {
-      nextErrors.endDate = 'End date must be on or after start date';
-    }
+    if (!form.category) nextErrors.category = 'Category is required';
+
+    form.ranges.forEach((sr, idx) => {
+      const prefix = `ranges[${idx}]`;
+      if (!sr.label.trim()) nextErrors[`${prefix}.label`] = 'Label is required';
+      if (!sr.startDate) nextErrors[`${prefix}.startDate`] = 'Start date is required';
+      if (!sr.endDate) nextErrors[`${prefix}.endDate`] = 'End date is required';
+      if (sr.startDate && sr.endDate && sr.startDate > sr.endDate) {
+        nextErrors[`${prefix}.endDate`] = 'Must be on or after start date';
+      }
+    });
+
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   }
@@ -61,9 +76,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
 
     if (editingId) {
       const updated = ranges.map((r) =>
-        r.id === editingId
-          ? { ...r, ...form }
-          : r
+        r.id === editingId ? { ...r, ...form } : r
       );
       onUpdate(updated);
       setEditingId(null);
@@ -73,10 +86,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
         ...form,
         enabled: true,
       };
-      const nextRanges = [...ranges, newRange];
-      onUpdate(nextRanges);
+      onUpdate([...ranges, newRange]);
     }
-    setForm({ ...emptyFormBase, color: getDefaultColor(ranges) });
+    setForm({ ...emptyFormState, color: getDefaultColor(ranges) });
     setErrors({});
   }
 
@@ -93,22 +105,49 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
     onUpdate(ranges.filter((r) => r.id !== deleteId));
     if (editingId === deleteId) {
       setEditingId(null);
-      setForm({ ...emptyFormBase, color: getDefaultColor(ranges) });
+      setForm({ ...emptyFormState, color: getDefaultColor(ranges) });
     }
     setDeleteId(null);
   }
 
   function toggleEnabled(id: string) {
-    const updated = ranges.map((r) =>
+    onUpdate(ranges.map((r) =>
       r.id === id ? { ...r, enabled: !r.enabled } : r
-    );
-    onUpdate(updated);
+    ));
   }
 
   function cancelEdit() {
     setEditingId(null);
-    setForm({ ...emptyFormBase, color: getDefaultColor(ranges) });
+    setForm({ ...emptyFormState, color: getDefaultColor(ranges) });
     setErrors({});
+  }
+
+  function addSubRange() {
+    setForm((prev) => ({
+      ...prev,
+      ranges: [...prev.ranges, makeEmptySubRange()],
+    }));
+  }
+
+  function removeSubRange(index: number) {
+    setForm((prev) => ({
+      ...prev,
+      ranges: prev.ranges.filter((_, i) => i !== index),
+    }));
+  }
+
+  function updateSubRange(index: number, patch: Partial<SubRange>) {
+    setForm((prev) => ({
+      ...prev,
+      ranges: prev.ranges.map((sr, i) =>
+        i === index ? { ...sr, ...patch } : sr
+      ),
+    }));
+  }
+
+  function formatShortDate(dateStr: string): string {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   }
 
   return (
@@ -123,35 +162,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
               type="text"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="e.g. Modern Firearm Elk"
+              placeholder="e.g. Whitetail"
             />
             {errors.name && <span className="error">{errors.name}</span>}
           </div>
-
-          <div className="form-row date-row">
-            <div>
-              <label htmlFor="startDate">Start date </label>
-              <input
-                id="startDate"
-                type="date"
-                value={form.startDate}
-                onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-              />
-              {errors.startDate && <span className="error">{errors.startDate}</span>}
-            </div>
-            <div>
-              <label htmlFor="endDate">End date </label>
-              <input
-                id="endDate"
-                type="date"
-                value={form.endDate}
-                onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-              />
-              {errors.endDate && <span className="error">{errors.endDate}</span>}
-            </div>
-          </div>
-
-
 
           <div className="form-row">
             <label htmlFor="category">Category</label>
@@ -162,11 +176,67 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
             >
               <option value="">Select category…</option>
               {CATEGORIES.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
+            {errors.category && <span className="error">{errors.category}</span>}
+          </div>
+
+          <div className="sub-ranges-section">
+            <label className="sub-ranges-label">Date ranges</label>
+            {form.ranges.map((sr, idx) => (
+              <div key={sr.id} className="sub-range-row">
+                <div className="sub-range-field">
+                  <input
+                    type="text"
+                    placeholder="Label (e.g. Early)"
+                    value={sr.label}
+                    onChange={(e) => updateSubRange(idx, { label: e.target.value })}
+                  />
+                  {errors[`ranges[${idx}].label`] && (
+                    <span className="error">{errors[`ranges[${idx}].label`]}</span>
+                  )}
+                </div>
+                <div className="sub-range-field">
+                  <input
+                    type="date"
+                    value={sr.startDate}
+                    onChange={(e) => updateSubRange(idx, { startDate: e.target.value })}
+                  />
+                  {errors[`ranges[${idx}].startDate`] && (
+                    <span className="error">{errors[`ranges[${idx}].startDate`]}</span>
+                  )}
+                </div>
+                <div className="sub-range-field">
+                  <input
+                    type="date"
+                    value={sr.endDate}
+                    onChange={(e) => updateSubRange(idx, { endDate: e.target.value })}
+                  />
+                  {errors[`ranges[${idx}].endDate`] && (
+                    <span className="error">{errors[`ranges[${idx}].endDate`]}</span>
+                  )}
+                </div>
+                {form.ranges.length > 1 && (
+                  <button
+                    type="button"
+                    className="btn-icon danger"
+                    onClick={() => removeSubRange(idx)}
+                    aria-label="Remove sub-range"
+                    title="Remove"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              className="btn-ghost btn-small"
+              onClick={addSubRange}
+            >
+              + Add another date range
+            </button>
           </div>
 
           <div className="form-row">
@@ -206,7 +276,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
           ) : (
             <ul>
               {ranges.map((r) => (
-                <li key={r.id} className={`range-list-item ${editingId === r.id ? 'editing' : ''}`}>
+                <li
+                  key={r.id}
+                  className={`range-list-item ${editingId === r.id ? 'editing' : ''}`}
+                >
                   <label className="range-checkbox-label">
                     <input
                       type="checkbox"
@@ -217,10 +290,21 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
                       className="range-color-dot"
                       style={{ backgroundColor: r.color }}
                     />
-                    <span className="range-list-name">{r.name}</span>
-                    {r.category && (
-                      <span className="range-list-category">{r.category}</span>
-                    )}
+                    <div className="range-list-info">
+                      <div className="range-list-top">
+                        <span className="range-list-name">{r.name}</span>
+                        {r.category && (
+                          <span className="range-list-category">{r.category}</span>
+                        )}
+                      </div>
+                      <div className="range-list-subs">
+                        {r.ranges.map((sr) => (
+                          <span key={sr.id} className="range-list-sub">
+                            {sr.label}: {formatShortDate(sr.startDate)} – {formatShortDate(sr.endDate)}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </label>
                   <div className="range-list-actions">
                     <button
@@ -250,7 +334,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
       <Dialog
         open={deleteId !== null}
         title="Delete Range"
-        message="This will permanently remove the date range from your timeline. You can’t undo this action."
+        message="This will permanently remove the date range from your timeline. You can't undo this action."
         confirmLabel="Delete"
         cancelLabel="Cancel"
         confirmVariant="danger"

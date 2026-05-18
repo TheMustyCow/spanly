@@ -73,6 +73,65 @@
   color: #ef4444;
 }
 
+/* Sub-ranges */
+.sub-ranges-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sub-ranges-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.sub-range-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 8px;
+  align-items: start;
+  background: #f9fafb;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
+}
+
+.sub-range-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sub-range-field input[type="text"],
+.sub-range-field input[type="date"] {
+  padding: 8px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #1f2937;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.sub-range-field input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.12);
+}
+
+.sub-range-row .btn-icon {
+  align-self: center;
+}
+
+.btn-small {
+  padding: 8px 14px;
+  font-size: 13px;
+  align-self: flex-start;
+}
+
 .color-picker {
   display: flex;
   flex-wrap: wrap;
@@ -163,7 +222,7 @@
 
 .range-list-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   padding: 8px 10px;
   border-radius: 8px;
@@ -182,11 +241,12 @@
 
 .range-checkbox-label {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 10px;
   cursor: pointer;
   flex: 1;
   min-width: 0;
+  padding-top: 2px;
 }
 
 .range-checkbox-label input[type="checkbox"] {
@@ -195,6 +255,7 @@
   accent-color: #6366f1;
   cursor: pointer;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .range-color-dot {
@@ -202,6 +263,22 @@
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.range-list-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.range-list-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
 .range-list-name {
@@ -226,11 +303,28 @@
   flex-shrink: 0;
 }
 
+.range-list-subs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.range-list-sub {
+  font-size: 12px;
+  color: #6b7280;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
 .range-list-actions {
   display: flex;
   gap: 4px;
   opacity: 0;
   transition: opacity 0.15s;
+  margin-top: 2px;
 }
 
 .range-list-item:hover .range-list-actions {
@@ -266,6 +360,15 @@
 @media (max-width: 768px) {
   .control-panel {
     grid-template-columns: 1fr;
+  }
+
+  .sub-range-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sub-range-row .btn-icon {
+    grid-column: 1 / -1;
+    justify-self: end;
   }
 
   .range-list-actions {

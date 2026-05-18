@@ -11,6 +11,10 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({ ranges }) => {
   const total = ranges.length;
   const active = enabledRanges.length;
 
+  // Count total sub-ranges
+  const totalSubRanges = ranges.reduce((sum, r) => sum + r.ranges.length, 0);
+  const activeSubRanges = enabledRanges.reduce((sum, r) => sum + r.ranges.length, 0);
+
   let earliest: string | null = null;
   let latest: string | null = null;
 
@@ -19,9 +23,10 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({ ranges }) => {
     return new Date(y, m - 1, d);
   }
 
-  if (enabledRanges.length > 0) {
-    const starts = enabledRanges.map((r) => parseDate(r.startDate));
-    const ends = enabledRanges.map((r) => parseDate(r.endDate));
+  const allSubRanges = enabledRanges.flatMap((r) => r.ranges);
+  if (allSubRanges.length > 0) {
+    const starts = allSubRanges.map((sr) => parseDate(sr.startDate));
+    const ends = allSubRanges.map((sr) => parseDate(sr.endDate));
     const minDate = new Date(Math.min(...starts.map((d) => d.getTime())));
     const maxDate = new Date(Math.max(...ends.map((d) => d.getTime())));
     earliest = minDate.toLocaleDateString(undefined, {
@@ -42,11 +47,11 @@ export const SummaryCard: React.FC<SummaryCardProps> = ({ ranges }) => {
       <div className="summary-grid">
         <div className="summary-item">
           <span className="summary-value">{total}</span>
-          <span className="summary-label">Total Ranges</span>
+          <span className="summary-label">Total Groups</span>
         </div>
         <div className="summary-item">
-          <span className="summary-value">{active}</span>
-          <span className="summary-label">Enabled</span>
+          <span className="summary-value">{activeSubRanges}</span>
+          <span className="summary-label">Active Ranges</span>
         </div>
         <div className="summary-item">
           <span className="summary-value">{earliest ?? '—'}</span>

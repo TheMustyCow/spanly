@@ -50,8 +50,10 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
       };
     }
 
-    const starts = enabled.map((r) => parseDate(r.startDate));
-    const ends = enabled.map((r) => parseDate(r.endDate));
+    // Collect all sub-range dates across all enabled entries
+    const allSubRanges = enabled.flatMap((r) => r.ranges);
+    const starts = allSubRanges.map((sr) => parseDate(sr.startDate));
+    const ends = allSubRanges.map((sr) => parseDate(sr.endDate));
 
     let min = new Date(Math.min(...starts.map((d) => d.getTime())));
     let max = new Date(Math.max(...ends.map((d) => d.getTime())));
@@ -169,11 +171,6 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
           {/* Body rows */}
           <div className="tl-body">
             {enabled.map((s, idx) => {
-              const start = parseDate(s.startDate);
-              const end = parseDate(s.endDate);
-              const offsetDays = daysBetween(timelineStart, start);
-              const durationDays = daysBetween(start, end) + 1; // inclusive
-
               return (
                 <div
                   key={s.id}
@@ -184,7 +181,6 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                     <span className="tl-row-name">{s.name}</span>
                     {s.category && (
                       <span className="tl-row-category"></span>
-                      // <span className="tl-row-category">{s.category}</span>
                     )}
                   </div>
                   <div className="tl-row-track" style={{ width: `${trackWidth}px` }}>
@@ -196,16 +192,30 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                         style={{ left: `${line.index * DAY_WIDTH}px` }}
                       />
                     ))}
-                    {/* bar */}
-                    <div
-                      className="tl-bar"
-                      style={{
-                        left: `${offsetDays * DAY_WIDTH}px`,
-                        width: `${durationDays * DAY_WIDTH}px`,
-                        backgroundColor: s.color,
-                      }}
-                      title={`${s.name}: ${s.startDate} → ${s.endDate}`}
-                    />
+                    {/* bars — one per sub-range */}
+                    {s.ranges.map((sr) => {
+                      const start = parseDate(sr.startDate);
+                      const end = parseDate(sr.endDate);
+                      const offsetDays = daysBetween(timelineStart, start);
+                      const durationDays = daysBetween(start, end) + 1; // inclusive
+
+                      return (
+                        <div
+                          key={sr.id}
+                          className="tl-bar"
+                          style={{
+                            left: `${offsetDays * DAY_WIDTH}px`,
+                            width: `${durationDays * DAY_WIDTH}px`,
+                            backgroundColor: s.color,
+                          }}
+                          title={`${s.name} — ${sr.label}: ${sr.startDate} → ${sr.endDate}`}
+                        >
+                          {sr.label && (
+                            <span className="tl-bar-label">{sr.label}</span>
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
