@@ -114,10 +114,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
   return (
     <div className="control-panel">
       <div className="cp-form-section">
-        <h2>{editingId ? 'Edit Season' : 'Add Season'}</h2>
-        <form onSubmit={handleSubmit} className="season-form">
+        <h2>{editingId ? 'Edit Range' : 'Add Range'}</h2>
+        <form onSubmit={handleSubmit} className="range-form">
           <div className="form-row">
-            <label htmlFor="name">Season name</label>
+            <label htmlFor="name">Range name</label>
             <input
               id="name"
               type="text"
@@ -192,10 +192,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
       </div>
 
       <div className="cp-list-section">
-        <h2>Seasons</h2>
+        <h2>Ranges</h2>
         <div className="range-list">
           {ranges.length === 0 ? (
-            <p className="empty-list">No seasons yet. Add one above.</p>
+            <p className="empty-list">No ranges yet. Add one above.</p>
           ) : (
             <ul>
               {ranges.map((r) => (
@@ -239,8 +239,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
 
       <Dialog
         open={deleteId !== null}
-        title="Delete Season"
-        message="This will permanently remove the season from your timeline. You can’t undo this action."
+        title="Delete Range"
+        message="This will permanently remove the date range from your timeline. You can’t undo this action."
         confirmLabel="Delete"
         cancelLabel="Cancel"
         confirmVariant="danger"

@@ -145,18 +145,18 @@
   position: relative;
 }
 
-.tl-season-row {
+.tl-range-row {
   display: flex;
   height: 44px;
   align-items: stretch;
   border-bottom: 1px solid #f1f5f9;
 }
 
-.tl-season-row.even {
+.tl-range-row.even {
   background: rgba(248, 250, 252, 0.5);
 }
 
-.tl-season-row.odd {
+.tl-range-row.odd {
   background: #fff;
 }
 
@@ -219,7 +219,7 @@
   width: 1.5px;
 }
 
-/* season bars */
+/* range bars */
 .tl-bar {
   position: absolute;
   top: 50%;

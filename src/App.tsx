@@ -6,7 +6,7 @@ import { Timeline } from './components/Timeline';
 import { SummaryCard } from './components/SummaryCard';
 import './App.css';
 
-const STORAGE_KEY = 'seasonline-data-v1';
+const STORAGE_KEY = 'spanly-data-v1';
 
 function loadInitial(): SeasonRange[] {
   try {
@@ -31,8 +31,8 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <h1>SeasonLine</h1>
-        <p className="subtitle">Plan and compare season date ranges on a shared timeline</p>
+        <h1>Spanly</h1>
+        <p className="subtitle">Plan and compare date ranges on a shared timeline</p>
       </header>
 
       <main className="app-layout">

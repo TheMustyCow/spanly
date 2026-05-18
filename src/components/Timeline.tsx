@@ -115,7 +115,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
   if (enabled.length === 0 || !timelineStart) {
     return (
       <div className="timeline-card empty">
-        <p className="empty-text">No seasons enabled. Check the boxes below to view them on the timeline.</p>
+        <p className="empty-text">No ranges enabled. Check the boxes below to view them on the timeline.</p>
       </div>
     );
   }
@@ -129,7 +129,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
           {/* Sticky header */}
           <div className="tl-sticky-header">
             <div className="tl-header-labels">
-              <div className="tl-corner tl-corner-top">Season</div>
+                <div className="tl-corner tl-corner-top">Range</div>
               <div className="tl-corner" />
             </div>
             <div className="tl-header-track" style={{ width: `${trackWidth}px` }}>
@@ -177,7 +177,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
               return (
                 <div
                   key={s.id}
-                  className={`tl-season-row ${idx % 2 === 0 ? 'even' : 'odd'}`}
+                  className={`tl-range-row ${idx % 2 === 0 ? 'even' : 'odd'}`}
                 >
                   <div className="tl-row-label">
                     <span className="tl-dot" style={{ backgroundColor: s.color }} />
