@@ -1,0 +1,118 @@
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: dialogFadeIn 0.18s ease;
+}
+
+@keyframes dialogFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dialog-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.12),
+    0 8px 24px rgba(0,0,0,0.08);
+  padding: 28px 32px 24px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  animation: dialogSlideUp 0.22s ease;
+}
+
+@keyframes dialogSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dialog-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fef2f2;
+  color: #ef4444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+
+.dialog-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.2px;
+}
+
+.dialog-message {
+  font-size: 15px;
+  color: #6b7280;
+  line-height: 1.45;
+  margin: 0 0 24px 0;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.dialog-btn {
+  flex: 1;
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  border: none;
+}
+
+.dialog-btn:active {
+  transform: scale(0.98);
+}
+
+.dialog-btn-secondary {
+  background: #f8fafc;
+  color: #374151;
+  border: 1px solid #e2e8f0;
+}
+
+.dialog-btn-secondary:hover {
+  background: #f1f5f9;
+}
+
+.dialog-btn-primary {
+  background: #1f2937;
+  color: #fff;
+}
+
+.dialog-btn-primary:hover {
+  background: #111827;
+}
+
+.dialog-btn-danger {
+  background: #ef4444;
+  color: #fff;
+}
+
+.dialog-btn-danger:hover {
+  background: #dc2626;
+}

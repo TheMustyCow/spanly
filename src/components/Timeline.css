@@ -1,0 +1,258 @@
+.timeline-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  border: 1px solid #eef0f4;
+  overflow: hidden;
+}
+
+.timeline-card.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  padding: 24px;
+}
+
+.empty-text {
+  color: #6b7280;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* ---------- scrollable wrapper ---------- */
+.timeline-scroll-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Show a subtle shadow hint when content overflows */
+  background:
+    linear-gradient(to right, #fff 30%, transparent) left center / 40px 100%,
+    linear-gradient(to right, transparent, #fff 70%) right center / 40px 100%,
+    linear-gradient(to right, rgba(0,0,0,0.03) 0px, transparent 1px) left center / 1px 100%;
+  background-repeat: no-repeat;
+}
+
+.timeline-scroll-wrapper::-webkit-scrollbar {
+  height: 10px;
+}
+
+.timeline-scroll-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 0 0 8px 8px;
+}
+
+.timeline-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 5px;
+}
+
+.timeline-content {
+  position: relative;
+}
+
+/* ---------- sticky header ---------- */
+.tl-sticky-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #fafbfc;
+}
+
+.tl-header-labels {
+  width: 180px;
+  min-width: 180px;
+  position: sticky;
+  left: 0;
+  z-index: 30;
+  background: #fafbfc;
+  display: flex;
+  flex-direction: column;
+}
+
+.tl-corner {
+  height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-right: 1px solid #eef0f4;
+  border-bottom: 1px solid #eef0f4;
+  box-sizing: border-box;
+}
+
+.tl-corner-top {
+  height: 32px;
+}
+
+.tl-header-track {
+  position: relative;
+  height: 60px; /* 32px month + 28px day numbers */
+}
+
+/* Month blocks */
+.tl-months {
+  position: relative;
+  height: 32px;
+  border-bottom: 1px solid #eef0f4;
+}
+
+.tl-month-block {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-left: 1px solid #e5e7eb;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Day numbers */
+.tl-days {
+  position: relative;
+  height: 28px;
+  border-bottom: 1px solid #eef0f4;
+}
+
+.tl-day-cell {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 500;
+  color: #9ca3af;
+  box-sizing: border-box;
+  border-left: 1px solid transparent;
+}
+
+/* ---------- body ---------- */
+.tl-body {
+  position: relative;
+}
+
+.tl-season-row {
+  display: flex;
+  height: 44px;
+  align-items: stretch;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.tl-season-row.even {
+  background: rgba(248, 250, 252, 0.5);
+}
+
+.tl-season-row.odd {
+  background: #fff;
+}
+
+.tl-row-label {
+  width: 180px;
+  min-width: 180px;
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background: inherit;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  border-right: 1px solid #eef0f4;
+  box-sizing: border-box;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tl-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tl-row-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tl-row-track {
+  position: relative;
+  height: 100%;
+  flex-shrink: 0;
+}
+
+/* vertical grid lines */
+.tl-vline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #f1f5f9;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tl-vline.week {
+  background: #e2e8f0;
+}
+
+.tl-vline.month {
+  background: #cbd5e1;
+  width: 1.5px;
+}
+
+/* season bars */
+.tl-bar {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 22px;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  min-width: 3px;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  z-index: 2;
+}
+
+.tl-bar:hover {
+  opacity: 0.85;
+  transform: translateY(-50%) scaleY(1.15);
+}
+
+/* ---------- responsive ---------- */
+@media (max-width: 768px) {
+  .tl-header-labels,
+  .tl-row-label {
+    width: 140px;
+    min-width: 140px;
+    padding: 0 12px;
+  }
+
+  .tl-row-name {
+    font-size: 12px;
+  }
+
+  .tl-corner {
+    padding: 0 12px;
+    font-size: 10px;
+  }
+}
