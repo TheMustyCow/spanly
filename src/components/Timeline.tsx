@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useRef } from 'react';
 import type { SeasonRange } from '../types';
 import './Timeline.css';
+import { CATEGORIES } from '../data/seed';
 
 interface TimelineProps {
   ranges: SeasonRange[];
@@ -248,7 +249,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                           onMouseLeave={hideTooltip}
                         >
                           {sr.label && (
-                            <span className="tl-bar-label">{sr.label}</span>
+                            <span className="tl-bar-label">{sr.label} - {s.category}</span>
                           )}
                         </div>
                       );

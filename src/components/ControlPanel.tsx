@@ -34,6 +34,8 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
   const [form, setForm] = useState({ ...emptyFormState, color: getDefaultColor(ranges) });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
 
   useEffect(() => {
     if (editingId) {
@@ -148,6 +150,47 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
   function formatShortDate(dateStr: string): string {
     const d = new Date(dateStr);
     return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  function handleDragStart(e: React.DragEvent, id: string) {
+    setDraggingId(id);
+    e.dataTransfer.effectAllowed = 'move';
+    // Use an empty image or custom if needed; default ghost is fine
+  }
+
+  function handleDragOver(e: React.DragEvent, id: string) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (id !== draggingId && id !== dragOverId) {
+      setDragOverId(id);
+    }
+  }
+
+  function handleDrop(e: React.DragEvent, targetId: string) {
+    e.preventDefault();
+    if (!draggingId || draggingId === targetId) {
+      setDraggingId(null);
+      setDragOverId(null);
+      return;
+    }
+    const fromIndex = ranges.findIndex((r) => r.id === draggingId);
+    const toIndex = ranges.findIndex((r) => r.id === targetId);
+    if (fromIndex === -1 || toIndex === -1) {
+      setDraggingId(null);
+      setDragOverId(null);
+      return;
+    }
+    const next = [...ranges];
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
+    onUpdate(next);
+    setDraggingId(null);
+    setDragOverId(null);
+  }
+
+  function handleDragEnd() {
+    setDraggingId(null);
+    setDragOverId(null);
   }
 
   return (
@@ -278,8 +321,14 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
               {ranges.map((r) => (
                 <li
                   key={r.id}
-                  className={`range-list-item ${editingId === r.id ? 'editing' : ''}`}
+                  className={`range-list-item ${editingId === r.id ? 'editing' : ''} ${draggingId === r.id ? 'dragging' : ''} ${dragOverId === r.id ? 'drag-over' : ''}`}
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, r.id)}
+                  onDragOver={(e) => handleDragOver(e, r.id)}
+                  onDrop={(e) => handleDrop(e, r.id)}
+                  onDragEnd={handleDragEnd}
                 >
+                  <span className="drag-handle" title="Drag to reorder">⋮⋮</span>
                   <label className="range-checkbox-label">
                     <input
                       type="checkbox"

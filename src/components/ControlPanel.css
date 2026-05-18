@@ -228,6 +228,7 @@
   border-radius: 8px;
   border: 1px solid transparent;
   transition: background 0.15s, border-color 0.15s;
+  position: relative;
 }
 
 .range-list-item:hover {
@@ -237,6 +238,41 @@
 .range-list-item.editing {
   background: #f5f3ff;
   border-color: #c7d2fe;
+}
+
+.range-list-item.dragging {
+  opacity: 0.5;
+  border: 1px dashed #c7d2fe;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.range-list-item.drag-over::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 8px;
+  right: 8px;
+  height: 3px;
+  background: #6366f1;
+  border-radius: 2px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.drag-handle {
+  cursor: grab;
+  font-size: 14px;
+  color: #9ca3af;
+  letter-spacing: -2px;
+  padding: 0 2px;
+  user-select: none;
+  line-height: 1;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
 }
 
 .range-checkbox-label {
