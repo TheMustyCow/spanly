@@ -33,17 +33,21 @@
 }
 
 .timeline-scroll-wrapper::-webkit-scrollbar {
-  height: 10px;
+  height: 8px;
 }
 
 .timeline-scroll-wrapper::-webkit-scrollbar-track {
-  background: var(--surface);
-  border-radius: 0 0 8px 8px;
+  background: transparent;
+  border-radius: 4px;
 }
 
 .timeline-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.timeline-scroll-wrapper::-webkit-scrollbar-thumb:hover {
   background: var(--border-input);
-  border-radius: 5px;
 }
 
 .timeline-content {

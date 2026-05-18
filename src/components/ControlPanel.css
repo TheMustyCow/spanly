@@ -210,6 +210,24 @@
   overflow-y: auto;
 }
 
+.range-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.range-list::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 4px;
+}
+
+.range-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.range-list::-webkit-scrollbar-thumb:hover {
+  background: var(--border-input);
+}
+
 .empty-list {
   font-size: 14px;
   color: var(--text-muted);
