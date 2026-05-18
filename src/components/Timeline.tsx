@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useRef } from 'react';
 import type { SeasonRange } from '../types';
 import './Timeline.css';
 
@@ -29,8 +29,40 @@ function formatMonth(date: Date): string {
   return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
 }
 
+function formatShortDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
 export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
   const enabled = ranges.filter((r) => r.enabled);
+
+  const [tooltip, setTooltip] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    text: string;
+  }>({ visible: false, x: 0, y: 0, text: '' });
+
+  const tooltipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function showTooltip(text: string, e: React.MouseEvent) {
+    if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+    tooltipTimer.current = setTimeout(() => {
+      setTooltip({ visible: true, x: e.clientX, y: e.clientY - 12, text });
+    }, 300);
+  }
+
+  function moveTooltip(e: React.MouseEvent) {
+    setTooltip((prev) =>
+      prev.visible ? { ...prev, x: e.clientX, y: e.clientY - 12 } : prev
+    );
+  }
+
+  function hideTooltip() {
+    if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+    setTooltip((prev) => ({ ...prev, visible: false }));
+  }
 
   const {
     timelineStart,
@@ -199,6 +231,9 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                       const offsetDays = daysBetween(timelineStart, start);
                       const durationDays = daysBetween(start, end) + 1; // inclusive
 
+                      // const tooltipText = `${s.name} — ${sr.label}: ${formatShortDate(sr.startDate)} – ${formatShortDate(sr.endDate)} (${durationDays} days)`;
+                      const tooltipText = `${s.name} — ${sr.label}: ${durationDays} days`;
+
                       return (
                         <div
                           key={sr.id}
@@ -208,7 +243,9 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                             width: `${durationDays * DAY_WIDTH}px`,
                             backgroundColor: s.color,
                           }}
-                          title={`${s.name} — ${sr.label}: ${sr.startDate} → ${sr.endDate}`}
+                          onMouseEnter={(e) => showTooltip(tooltipText, e)}
+                          onMouseMove={moveTooltip}
+                          onMouseLeave={hideTooltip}
                         >
                           {sr.label && (
                             <span className="tl-bar-label">{sr.label}</span>
@@ -223,6 +260,19 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
           </div>
         </div>
       </div>
+
+      {/* Custom tooltip */}
+      {tooltip.visible && (
+        <div
+          className="tl-tooltip"
+          style={{
+            left: `${tooltip.x}px`,
+            top: `${tooltip.y}px`,
+          }}
+        >
+          {tooltip.text}
+        </div>
+      )}
     </div>
   );
 };
