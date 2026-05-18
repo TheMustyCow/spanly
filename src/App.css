@@ -1,13 +1,13 @@
 .app {
   min-height: 100svh;
-  background: #f8f9fa;
+  background: var(--bg);
   display: flex;
   flex-direction: column;
 }
 
 .app-header {
-  background: #fff;
-  border-bottom: 1px solid #eef0f4;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border);
   padding: 20px 32px;
   display: flex;
   align-items: center;
@@ -22,7 +22,7 @@
 .app-header h1 {
   font-size: 24px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-h);
   margin: 0;
   letter-spacing: -0.5px;
 }
@@ -30,7 +30,7 @@
 .subtitle {
   margin: 4px 0 0 0;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .app-header-actions {
@@ -43,29 +43,61 @@
 .btn-header {
   padding: 8px 16px;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--border-input);
+  background: var(--card-bg);
+  color: var(--text);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
 
 .btn-header:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
+  background: var(--surface);
+  border-color: var(--border-input);
 }
 
 .btn-header-primary {
-  background: #1f2937;
-  color: #fff;
-  border-color: #1f2937;
+  background: var(--card-bg);
+  color: var(--text);
+  border-color: var(--border-input);
 }
 
 .btn-header-primary:hover {
-  background: #111827;
-  border-color: #111827;
+  background: var(--surface);
+  border-color: var(--border-input);
+}
+
+.btn-header-danger {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.btn-header-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.btn-icon-theme {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border-input);
+  background: var(--card-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.btn-icon-theme:hover {
+  background: var(--surface);
+  border-color: var(--border-input);
 }
 
 .app-layout {

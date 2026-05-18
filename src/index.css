@@ -1,13 +1,24 @@
 :root {
   --text: #374151;
   --text-h: #111827;
+  --text-muted: #6b7280;
+
   --bg: #f8f9fa;
   --card-bg: #ffffff;
+  --surface: #f9fafb;
+  --surface-hover: #f5f3ff;
+
   --border: #eef0f4;
+  --border-light: #f1f5f9;
+  --border-input: #e5e7eb;
+
   --accent: #6366f1;
-  --accent-bg: rgba(99, 102, 241, 0.08);
-  --shadow:
-    0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --accent-light: rgba(99, 102, 241, 0.08);
+  --accent-focus: rgba(99, 102, 241, 0.12);
+
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --tooltip-bg: #1f2937;
+  --tooltip-text: #fff;
 
   --sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --heading: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -22,6 +33,29 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="dark"] {
+  --text: #cbd5e1;
+  --text-h: #f8fafc;
+  --text-muted: #94a3b8;
+
+  --bg: #0b1320;
+  --card-bg: #111827;
+  --surface: #1e293b;
+  --surface-hover: #334155;
+
+  --border: #334155;
+  --border-light: #1e293b;
+  --border-input: #475569;
+
+  --accent: #818cf8;
+  --accent-light: rgba(99, 102, 241, 0.15);
+  --accent-focus: rgba(129, 140, 248, 0.2);
+
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --tooltip-bg: #0f172a;
+  --tooltip-text: #e2e8f0;
 }
 
 body {

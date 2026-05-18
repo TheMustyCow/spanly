@@ -16,16 +16,16 @@
 .cp-list-section h2 {
   font-size: 16px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-h);
   margin: 0;
 }
 
 .range-form {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  border: 1px solid #eef0f4;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -40,26 +40,26 @@
 .form-row label {
   font-size: 13px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text);
 }
 
 .form-row input[type="text"],
 .form-row input[type="date"],
 .form-row select {
   padding: 10px 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-input);
   border-radius: 8px;
   font-size: 14px;
-  color: #1f2937;
-  background: #fff;
+  color: var(--text-h);
+  background: var(--card-bg);
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .form-row input:focus,
 .form-row select:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-focus);
 }
 
 .date-row {
@@ -83,7 +83,7 @@
 .sub-ranges-label {
   font-size: 13px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text);
 }
 
 .sub-range-row {
@@ -91,10 +91,10 @@
   grid-template-columns: 1fr 1fr 1fr auto;
   gap: 8px;
   align-items: start;
-  background: #f9fafb;
+  background: var(--surface);
   padding: 10px 12px;
   border-radius: 8px;
-  border: 1px solid #f3f4f6;
+  border: 1px solid var(--border-light);
 }
 
 .sub-range-field {
@@ -106,11 +106,11 @@
 .sub-range-field input[type="text"],
 .sub-range-field input[type="date"] {
   padding: 8px 10px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-input);
   border-radius: 6px;
   font-size: 13px;
-  color: #1f2937;
-  background: #fff;
+  color: var(--text-h);
+  background: var(--card-bg);
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
   width: 100%;
@@ -118,8 +118,8 @@
 }
 
 .sub-range-field input:focus {
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-focus);
 }
 
 .sub-range-row .btn-icon {
@@ -153,7 +153,12 @@
 
 .color-swatch.active {
   border-color: #1f2937;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1f2937;
+  box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px #1f2937;
+}
+
+[data-theme="dark"] .color-swatch.active {
+  border-color: #f8fafc;
+  box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px #f8fafc;
 }
 
 .form-actions {
@@ -165,25 +170,26 @@
 .btn-primary {
   padding: 10px 16px;
   border-radius: 8px;
-  border: none;
-  background: #1f2937;
-  color: #fff;
+  border: 1px solid var(--border-input);
+  background: var(--card-bg);
+  color: var(--text);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 }
 
 .btn-primary:hover {
-  background: #111827;
+  background: var(--surface);
+  border-color: var(--border-input);
 }
 
 .btn-ghost {
   padding: 10px 16px;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  color: #374151;
+  border: 1px solid var(--border-input);
+  background: var(--card-bg);
+  color: var(--text);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -191,22 +197,22 @@
 }
 
 .btn-ghost:hover {
-  background: #f9fafb;
+  background: var(--surface);
 }
 
 .range-list {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 12px;
   padding: 16px 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  border: 1px solid #eef0f4;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
   max-height: 420px;
   overflow-y: auto;
 }
 
 .empty-list {
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--text-muted);
   margin: 0;
   padding: 8px 0;
 }
@@ -232,18 +238,18 @@
 }
 
 .range-list-item:hover {
-  background: #f9fafb;
+  background: var(--surface);
 }
 
 .range-list-item.editing {
-  background: #f5f3ff;
-  border-color: #c7d2fe;
+  background: var(--accent-light);
+  border-color: var(--accent);
 }
 
 .range-list-item.dragging {
   opacity: 0.5;
-  border: 1px dashed #c7d2fe;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border: 1px dashed var(--accent);
+  box-shadow: var(--shadow);
 }
 
 .range-list-item.drag-over::before {
@@ -253,7 +259,7 @@
   left: 8px;
   right: 8px;
   height: 3px;
-  background: #6366f1;
+  background: var(--accent);
   border-radius: 2px;
   z-index: 2;
   pointer-events: none;
@@ -262,7 +268,7 @@
 .drag-handle {
   cursor: grab;
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--text-muted);
   letter-spacing: -2px;
   padding: 0 2px;
   user-select: none;
@@ -288,7 +294,7 @@
 .range-checkbox-label input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: #6366f1;
+  accent-color: var(--accent);
   cursor: pointer;
   flex-shrink: 0;
   margin-top: 2px;
@@ -320,7 +326,7 @@
 .range-list-name {
   font-size: 14px;
   font-weight: 500;
-  color: #1f2937;
+  color: var(--text-h);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -329,8 +335,8 @@
 .range-list-category {
   font-size: 11px;
   font-weight: 600;
-  color: #6b7280;
-  background: #f3f4f6;
+  color: var(--text-muted);
+  background: var(--surface);
   padding: 2px 8px;
   border-radius: 999px;
   text-transform: uppercase;
@@ -348,8 +354,8 @@
 
 .range-list-sub {
   font-size: 12px;
-  color: #6b7280;
-  background: #f1f5f9;
+  color: var(--text-muted);
+  background: var(--surface);
   padding: 2px 8px;
   border-radius: 6px;
   white-space: nowrap;
@@ -373,7 +379,7 @@
   border-radius: 6px;
   border: none;
   background: transparent;
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 14px;
   cursor: pointer;
   display: inline-flex;
@@ -383,12 +389,12 @@
 }
 
 .btn-icon:hover {
-  background: #f3f4f6;
-  color: #1f2937;
+  background: var(--surface);
+  color: var(--text-h);
 }
 
 .btn-icon.danger:hover {
-  background: #fef2f2;
+  background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
 }
 

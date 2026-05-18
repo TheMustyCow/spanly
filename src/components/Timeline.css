@@ -1,8 +1,8 @@
 .timeline-card {
-  background: #fff;
+  background: var(--card-bg);
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  border: 1px solid #eef0f4;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -15,7 +15,7 @@
 }
 
 .empty-text {
-  color: #6b7280;
+  color: var(--text-muted);
   font-size: 15px;
   text-align: center;
 }
@@ -26,8 +26,8 @@
   overflow-y: hidden;
   /* Show a subtle shadow hint when content overflows */
   background:
-    linear-gradient(to right, #fff 30%, transparent) left center / 40px 100%,
-    linear-gradient(to right, transparent, #fff 70%) right center / 40px 100%,
+    linear-gradient(to right, var(--card-bg) 30%, transparent) left center / 40px 100%,
+    linear-gradient(to right, transparent, var(--card-bg) 70%) right center / 40px 100%,
     linear-gradient(to right, rgba(0,0,0,0.03) 0px, transparent 1px) left center / 1px 100%;
   background-repeat: no-repeat;
 }
@@ -37,12 +37,12 @@
 }
 
 .timeline-scroll-wrapper::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--surface);
   border-radius: 0 0 8px 8px;
 }
 
 .timeline-scroll-wrapper::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--border-input);
   border-radius: 5px;
 }
 
@@ -56,7 +56,7 @@
   position: sticky;
   top: 0;
   z-index: 20;
-  background: #fafbfc;
+  background: var(--surface);
 }
 
 .tl-header-labels {
@@ -65,7 +65,7 @@
   position: sticky;
   left: 0;
   z-index: 30;
-  background: #fafbfc;
+  background: var(--surface);
   display: flex;
   flex-direction: column;
 }
@@ -77,11 +77,11 @@
   padding: 0 16px;
   font-size: 11px;
   font-weight: 600;
-  color: #9ca3af;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-right: 1px solid #eef0f4;
-  border-bottom: 1px solid #eef0f4;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   box-sizing: border-box;
 }
 
@@ -98,7 +98,7 @@
 .tl-months {
   position: relative;
   height: 32px;
-  border-bottom: 1px solid #eef0f4;
+  border-bottom: 1px solid var(--border);
 }
 
 .tl-month-block {
@@ -110,10 +110,10 @@
   padding-left: 10px;
   font-size: 12px;
   font-weight: 600;
-  color: #374151;
+  color: var(--text);
   text-transform: uppercase;
   letter-spacing: 0.4px;
-  border-left: 1px solid #e5e7eb;
+  border-left: 1px solid var(--border-input);
   box-sizing: border-box;
   white-space: nowrap;
   overflow: hidden;
@@ -123,7 +123,7 @@
 .tl-days {
   position: relative;
   height: 28px;
-  border-bottom: 1px solid #eef0f4;
+  border-bottom: 1px solid var(--border);
 }
 
 .tl-day-cell {
@@ -135,7 +135,7 @@
   justify-content: center;
   font-size: 10px;
   font-weight: 500;
-  color: #9ca3af;
+  color: var(--text-muted);
   box-sizing: border-box;
   border-left: 1px solid transparent;
 }
@@ -149,15 +149,15 @@
   display: flex;
   height: 44px;
   align-items: stretch;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .tl-range-row.even {
-  background: rgba(248, 250, 252, 0.5);
+  background: rgba(148, 163, 184, 0.06);
 }
 
 .tl-range-row.odd {
-  background: #fff;
+  background: transparent;
 }
 
 .tl-row-label {
@@ -171,11 +171,11 @@
   align-items: center;
   padding: 0 16px;
   gap: 10px;
-  border-right: 1px solid #eef0f4;
+  border-right: 1px solid var(--border);
   box-sizing: border-box;
   font-size: 13px;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-h);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -196,8 +196,8 @@
 .tl-row-category {
   font-size: 10px;
   font-weight: 600;
-  color: #6b7280;
-  background: #f1f5f9;
+  color: var(--text-muted);
+  background: var(--surface);
   padding: 2px 8px;
   border-radius: 999px;
   text-transform: uppercase;
@@ -219,17 +219,17 @@
   top: 0;
   bottom: 0;
   width: 1px;
-  background: #f1f5f9;
+  background: var(--border-light);
   pointer-events: none;
   z-index: 1;
 }
 
 .tl-vline.week {
-  background: #e2e8f0;
+  background: var(--border);
 }
 
 .tl-vline.month {
-  background: #cbd5e1;
+  background: var(--border-input);
   width: 1.5px;
 }
 
@@ -271,14 +271,14 @@
   position: fixed;
   z-index: 1000;
   pointer-events: none;
-  background: #1f2937;
-  color: #fff;
+  background: var(--tooltip-bg);
+  color: var(--tooltip-text);
   font-size: 13px;
   font-weight: 500;
   padding: 8px 14px;
   border-radius: 8px;
   white-space: nowrap;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  box-shadow: var(--shadow);
   transform: translate(-50%, -100%);
   animation: tooltipFadeIn 0.15s ease;
 }
