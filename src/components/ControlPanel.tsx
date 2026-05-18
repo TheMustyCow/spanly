@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { SeasonRange } from '../types';
-import { DEFAULT_COLORS } from '../data/seed';
+import { DEFAULT_COLORS, CATEGORIES } from '../data/seed';
 import { Dialog } from './Dialog';
 import './ControlPanel.css';
 
@@ -154,6 +154,22 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
 
 
           <div className="form-row">
+            <label htmlFor="category">Category</label>
+            <select
+              id="category"
+              value={form.category}
+              onChange={(e) => setForm({ ...form, category: e.target.value })}
+            >
+              <option value="">Select category…</option>
+              {CATEGORIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-row">
             <label>Color</label>
             <div className="color-picker">
               {DEFAULT_COLORS.map((c) => (
@@ -202,6 +218,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
                       style={{ backgroundColor: r.color }}
                     />
                     <span className="range-list-name">{r.name}</span>
+                    {r.category && (
+                      <span className="range-list-category">{r.category}</span>
+                    )}
                   </label>
                   <div className="range-list-actions">
                     <button

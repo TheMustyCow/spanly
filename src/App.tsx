@@ -6,7 +6,7 @@ import { Timeline } from './components/Timeline';
 import { SummaryCard } from './components/SummaryCard';
 import './App.css';
 
-const STORAGE_KEY = 'spanly-data-v1';
+const STORAGE_KEY = 'spanly-data-v2';
 
 function loadInitial(): SeasonRange[] {
   try {

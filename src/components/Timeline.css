@@ -193,6 +193,20 @@
   text-overflow: ellipsis;
 }
 
+.tl-row-category {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
 .tl-row-track {
   position: relative;
   height: 100%;

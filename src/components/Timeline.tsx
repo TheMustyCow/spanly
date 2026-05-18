@@ -182,6 +182,10 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                   <div className="tl-row-label">
                     <span className="tl-dot" style={{ backgroundColor: s.color }} />
                     <span className="tl-row-name">{s.name}</span>
+                    {s.category && (
+                      <span className="tl-row-category"></span>
+                      // <span className="tl-row-category">{s.category}</span>
+                    )}
                   </div>
                   <div className="tl-row-track" style={{ width: `${trackWidth}px` }}>
                     {/* vertical grid lines */}
