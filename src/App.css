@@ -8,11 +8,19 @@
 .app-header {
   background: #fff;
   border-bottom: 1px solid #eef0f4;
-  padding: 24px 32px;
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.app-header-left {
+  min-width: 0;
 }
 
 .app-header h1 {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   color: #111827;
   margin: 0;
@@ -20,9 +28,44 @@
 }
 
 .subtitle {
-  margin: 6px 0 0 0;
-  font-size: 15px;
+  margin: 4px 0 0 0;
+  font-size: 14px;
   color: #6b7280;
+}
+
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-header {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.btn-header:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.btn-header-primary {
+  background: #1f2937;
+  color: #fff;
+  border-color: #1f2937;
+}
+
+.btn-header-primary:hover {
+  background: #111827;
+  border-color: #111827;
 }
 
 .app-layout {
@@ -44,6 +87,11 @@
   }
 
   .app-header {
-    padding: 20px 16px;
+    padding: 16px;
+    flex-wrap: wrap;
+  }
+
+  .app-header h1 {
+    font-size: 22px;
   }
 }
