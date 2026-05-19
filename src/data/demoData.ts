@@ -1,7 +1,7 @@
 import type { SeasonRange } from '../types';
 
 export const DEMO_DATA: SeasonRange[] = [
-  {
+ {
     "id": "16f79f63-5dac-4cfb-acf9-a5d7889da3b4",
     "name": "White Tail",
     "ranges": [
@@ -9,13 +9,13 @@ export const DEMO_DATA: SeasonRange[] = [
         "id": "44b4b24b-709b-4959-a061-9adb4be101dc",
         "label": "Early",
         "startDate": "2026-10-17",
-        "endDate": "2026-10-27"
+        "endDate": "2026-10-30"
       },
       {
         "id": "dab30080-a25b-4539-a57b-0a6d6abf9267",
         "label": "Late",
         "startDate": "2026-11-07",
-        "endDate": "2026-11-17"
+        "endDate": "2026-11-19"
       }
     ],
     "category": "Modern Firearm",
@@ -36,7 +36,7 @@ export const DEMO_DATA: SeasonRange[] = [
         "id": "228ff33a-35f3-4825-b513-b628d0d05f01",
         "label": "Late",
         "startDate": "2026-11-25",
-        "endDate": "2026-12-10"
+        "endDate": "2026-12-15"
       }
     ],
     "category": "Archery",
@@ -119,6 +119,36 @@ export const DEMO_DATA: SeasonRange[] = [
     ],
     "category": "Muzzleloader",
     "color": "#ef4444",
+    "enabled": true
+  },
+  {
+    "id": "9beceb8a-4c83-488b-b1ac-d2e4ff59aac3",
+    "name": "Black Bear",
+    "ranges": [
+      {
+        "id": "4d4fa04d-68a9-46bc-a5ec-a3cd31e6a3bc",
+        "label": "General",
+        "startDate": "2026-08-01",
+        "endDate": "2026-11-15"
+      }
+    ],
+    "category": "General",
+    "color": "#f97316",
+    "enabled": true
+  },
+  {
+    "id": "6033ec68-ca3f-4748-b0a0-b56cd56d697e",
+    "name": "Cougar",
+    "ranges": [
+      {
+        "id": "26288289-a771-43ed-a801-588f58de76ee",
+        "label": "General",
+        "startDate": "2026-09-01",
+        "endDate": "2027-03-31"
+      }
+    ],
+    "category": "General",
+    "color": "#f59e0b",
     "enabled": true
   }
 ];

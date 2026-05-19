@@ -148,8 +148,9 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({ ranges, onUpdate }) 
   }
 
   function formatShortDate(dateStr: string): string {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+    const [y, m, d] = dateStr.split('-').map(Number);
+    const date = new Date(y, m - 1, d);
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   }
 
   function handleDragStart(e: React.DragEvent, id: string) {

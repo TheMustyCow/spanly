@@ -19,8 +19,6 @@ export const CATEGORIES = [
   'Muzzleloader',
   'Youth',
   'General',
-  'Early Season',
-  'Late Season',
 ];
 
 export function getNextColor(index: number): string {
