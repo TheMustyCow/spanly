@@ -62,8 +62,8 @@
 /* ---------- sticky header ---------- */
 .tl-sticky-header {
   display: flex;
-  position: sticky;
-  top: 0;
+  /* Only the corner and month labels need to stick in this horizontal scroller. */
+  position: relative;
   z-index: 20;
   background: var(--surface);
 }
@@ -170,7 +170,6 @@
   color: var(--text-muted);
 }
 
-.tl-day-cell:hover,
 .tl-day-cell:focus-visible {
   color: var(--text-h);
   outline: 2px solid var(--accent);
@@ -180,6 +179,7 @@
 /* ---------- body ---------- */
 .tl-body {
   position: relative;
+  isolation: isolate;
 }
 
 .tl-range-row {
@@ -272,6 +272,18 @@
 }
 
 /* vertical grid lines */
+.tl-grid {
+  position: absolute;
+  left: var(--tl-label-width);
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to right, var(--border-light) 1px, transparent 1px);
+}
+
 .tl-vline {
   position: absolute;
   top: 0;
@@ -280,10 +292,6 @@
   background: var(--border-light);
   pointer-events: none;
   z-index: 1;
-}
-
-.tl-vline.week {
-  background: var(--border);
 }
 
 .tl-vline.month {
@@ -301,13 +309,24 @@
   box-shadow: 0 1px 2px rgba(0,0,0,0.08);
   min-width: 3px;
   cursor: pointer;
-  transition: opacity 0.15s, transform 0.15s;
   z-index: 2;
 }
 
-.tl-bar:hover {
-  opacity: 0.85;
-  transform: translateY(-50%) scaleY(1.15);
+@media (hover: hover) and (pointer: fine) {
+  .tl-bar {
+    transition: opacity 0.15s, transform 0.15s;
+  }
+
+  .tl-bar:hover {
+    opacity: 0.85;
+    transform: translateY(-50%) scaleY(1.15);
+  }
+
+  .tl-day-cell:hover {
+    color: var(--text-h);
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
 }
 
 .tl-bar-label {

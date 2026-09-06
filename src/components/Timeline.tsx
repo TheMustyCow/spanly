@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
 import type { SeasonRange } from '../types';
+import { TimelineTooltip } from './TimelineTooltip';
+import type { TimelineTooltipHandle } from './TimelineTooltip';
 import './Timeline.css';
 
 
@@ -43,40 +45,53 @@ function TimelineIndicators({ ranges, timelineStart, scrollRef }: {
   timelineStart: Date;
   scrollRef: React.RefObject<HTMLDivElement | null>;
 }) {
-  const sections = useMemo(() => ranges.map((range) => range.ranges.map((section) => ({
-    start: daysBetween(timelineStart, parseDate(section.startDate)) * DAY_WIDTH,
-    end: (daysBetween(timelineStart, parseDate(section.endDate)) + 1) * DAY_WIDTH,
-  }))), [ranges, timelineStart]);
+  // Only the earliest end and latest start can change a row's edge indicators.
+  const sections = useMemo(() => ranges.map((range) => ({
+    firstEnd: Math.min(...range.ranges.map((section) =>
+      (daysBetween(timelineStart, parseDate(section.endDate)) + 1) * DAY_WIDTH)),
+    lastStart: Math.max(...range.ranges.map((section) =>
+      daysBetween(timelineStart, parseDate(section.startDate)) * DAY_WIDTH)),
+  })), [ranges, timelineStart]);
   const [hidden, setHidden] = useState<{ left: boolean; right: boolean }[]>([]);
 
   useEffect(() => {
     const scroller = scrollRef.current;
     if (!scroller) return;
+    const labels = scroller.querySelector('.tl-header-labels');
     let frame = 0;
+    let visibleWidth = 0;
+    let previous: { left: boolean; right: boolean }[] = [];
 
     function update() {
       frame = 0;
       if (!scroller) return;
-      const labelWidth = scroller.querySelector('.tl-header-labels')?.getBoundingClientRect().width ?? 0;
       const left = scroller.scrollLeft;
-      const right = left + scroller.clientWidth - labelWidth;
+      const right = left + visibleWidth;
+      // Do not allocate new state or enter React unless a dot actually changes.
+      if (sections.every((row, i) =>
+        previous[i]?.left === (row.firstEnd <= left) &&
+        previous[i]?.right === (row.lastStart >= right)
+      )) return;
       const next = sections.map((row) => ({
-        left: row.some((section) => section.end <= left),
-        right: row.some((section) => section.start >= right),
+        left: row.firstEnd <= left,
+        right: row.lastStart >= right,
       }));
-      setHidden((prev) => prev.length === next.length && next.every((row, i) =>
-        row.left === prev[i].left && row.right === prev[i].right
-      ) ? prev : next);
+      previous = next;
+      setHidden(next);
     }
 
     function scheduleUpdate() {
       if (!frame) frame = requestAnimationFrame(update);
     }
 
-    const observer = new ResizeObserver(scheduleUpdate);
+    // Cache geometry on resize instead of requesting layout measurements during a swipe.
+    const observer = new ResizeObserver(() => {
+      visibleWidth = scroller.clientWidth - (labels?.getBoundingClientRect().width ?? 0);
+      scheduleUpdate();
+    });
     observer.observe(scroller);
+    if (labels) observer.observe(labels);
     scroller.addEventListener('scroll', scheduleUpdate, { passive: true });
-    scheduleUpdate();
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
@@ -107,39 +122,23 @@ function TimelineIndicators({ ranges, timelineStart, scrollRef }: {
 export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
   const enabled = useMemo(() => ranges.filter((r) => r.enabled), [ranges]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<TimelineTooltipHandle>(null);
 
-  const [tooltip, setTooltip] = useState<{
-    visible: boolean;
-    x: number;
-    y: number;
-    text: string;
-  }>({ visible: false, x: 0, y: 0, text: '' });
-
-  const tooltipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => () => {
-    if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
-  }, []);
-
-  function showTooltip(text: string, e: React.MouseEvent | React.FocusEvent) {
-    if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = 'clientX' in e ? e.clientX : rect.left + rect.width / 2;
-    const y = 'clientY' in e ? e.clientY : rect.top;
-    tooltipTimer.current = setTimeout(() => {
-      setTooltip({ visible: true, x, y: y - 12, text });
-    }, 300);
+  function showTooltip(text: string, e: React.PointerEvent | React.FocusEvent) {
+    if ('pointerType' in e) {
+      if (e.pointerType !== 'touch') tooltipRef.current?.show(text, e.clientX, e.clientY);
+    } else {
+      const rect = e.currentTarget.getBoundingClientRect();
+      tooltipRef.current?.show(text, rect.left + rect.width / 2, rect.top);
+    }
   }
 
-  function moveTooltip(e: React.MouseEvent) {
-    setTooltip((prev) =>
-      prev.visible ? { ...prev, x: e.clientX, y: e.clientY - 12 } : prev
-    );
+  function moveTooltip(e: React.PointerEvent) {
+    if (e.pointerType !== 'touch') tooltipRef.current?.move(e.clientX, e.clientY);
   }
 
   function hideTooltip() {
-    if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
-    setTooltip((prev) => prev.visible ? { ...prev, visible: false } : prev);
+    tooltipRef.current?.hide();
   }
 
   const {
@@ -147,7 +146,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
     trackWidth,
     monthBlocks,
     dayNumbers,
-    gridLines,
+    weekOffset,
   } = useMemo(() => {
     if (enabled.length === 0) {
       return {
@@ -156,7 +155,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
         trackWidth: 0,
         monthBlocks: [] as { name: string; startIndex: number; dayCount: number }[],
         dayNumbers: [] as TimelineDay[],
-        gridLines: [] as { index: number; isWeek: boolean; isMonth: boolean }[],
+        weekOffset: 0,
       };
     }
 
@@ -206,28 +205,22 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
       dayCount: total - groupStart,
     });
 
-    // Day numbers and grid lines (one per day boundary, so total + 1 lines)
+    // Day numbers; the body grid is painted once with repeating backgrounds.
     const days: TimelineDay[] = [];
-    const lines: { index: number; isWeek: boolean; isMonth: boolean }[] = [];
-    for (let i = 0; i <= total; i++) {
+    const weekdayFormatter = new Intl.DateTimeFormat(undefined, { weekday: 'long' });
+    const dateFormatter = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    for (let i = 0; i < total; i++) {
       const d = addDays(min, i);
-      if (i < total) {
-        days.push({
-          num: d.getDate(),
-          index: i,
-          weekday: d.toLocaleDateString(undefined, { weekday: 'long' }),
-          fullDate: d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
-          isWeekend: d.getDay() === 0 || d.getDay() === 6,
-        });
-      }
-      lines.push({
+      days.push({
+        num: d.getDate(),
         index: i,
-        isWeek: d.getDay() === 0,
-        isMonth: d.getDate() === 1,
+        weekday: weekdayFormatter.format(d),
+        fullDate: dateFormatter.format(d),
+        isWeekend: d.getDay() === 0 || d.getDay() === 6,
       });
     }
 
-    return { timelineStart: min, trackWidth, monthBlocks: months, dayNumbers: days, gridLines: lines };
+    return { timelineStart: min, trackWidth, monthBlocks: months, dayNumbers: days, weekOffset: ((7 - min.getDay()) % 7) * DAY_WIDTH };
   }, [enabled]);
 
   if (enabled.length === 0 || !timelineStart) {
@@ -276,9 +269,9 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                       left: `${d.index * DAY_WIDTH}px`,
                       width: `${DAY_WIDTH}px`,
                     }}
-                    onMouseEnter={(e) => showTooltip(d.weekday, e)}
-                    onMouseMove={moveTooltip}
-                    onMouseLeave={hideTooltip}
+                    onPointerEnter={(e) => showTooltip(d.weekday, e)}
+                    onPointerMove={moveTooltip}
+                    onPointerLeave={hideTooltip}
                     onFocus={(e) => showTooltip(d.weekday, e)}
                     onBlur={hideTooltip}
                     onKeyDown={(e) => { if (e.key === 'Escape') hideTooltip(); }}
@@ -292,6 +285,19 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
 
           {/* Body rows */}
           <div className="tl-body">
+            <div
+              className="tl-grid"
+              aria-hidden="true"
+              style={{
+                width: `${trackWidth}px`,
+                backgroundSize: `${DAY_WIDTH * 7}px 100%, ${DAY_WIDTH}px 100%`,
+                backgroundPosition: `${weekOffset}px 0, 0 0`,
+              }}
+            >
+              {monthBlocks.filter((month) => month.startIndex > 0 || timelineStart.getDate() === 1).map((month) => (
+                <div key={month.startIndex} className="tl-vline month" style={{ left: `${month.startIndex * DAY_WIDTH}px` }} />
+              ))}
+            </div>
             {enabled.map((s, idx) => {
               return (
                 <div
@@ -303,14 +309,6 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                     <span className="tl-row-name" title={s.name}>{s.name}</span>
                   </div>
                   <div className="tl-row-track" style={{ width: `${trackWidth}px` }}>
-                    {/* vertical grid lines */}
-                    {gridLines.map((line) => (
-                      <div
-                        key={line.index}
-                        className={`tl-vline ${line.isMonth ? 'month' : ''} ${line.isWeek ? 'week' : ''}`}
-                        style={{ left: `${line.index * DAY_WIDTH}px` }}
-                      />
-                    ))}
                     {/* bars — one per sub-range */}
                     {s.ranges.map((sr) => {
                       const start = parseDate(sr.startDate);
@@ -318,7 +316,6 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                       const offsetDays = daysBetween(timelineStart, start);
                       const durationDays = daysBetween(start, end) + 1; // inclusive
 
-                      // const tooltipText = `${s.name} — ${sr.label}: ${formatShortDate(sr.startDate)} – ${formatShortDate(sr.endDate)} (${durationDays} days)`;
                       const tooltipText = `${s.name} — ${sr.label}: ${durationDays} days`;
 
                       return (
@@ -330,9 +327,9 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                             width: `${durationDays * DAY_WIDTH}px`,
                             backgroundColor: s.color,
                           }}
-                          onMouseEnter={(e) => showTooltip(tooltipText, e)}
-                          onMouseMove={moveTooltip}
-                          onMouseLeave={hideTooltip}
+                          onPointerEnter={(e) => showTooltip(tooltipText, e)}
+                          onPointerMove={moveTooltip}
+                          onPointerLeave={hideTooltip}
                         >
                           {sr.label && (
                             <span className="tl-bar-label">{sr.label} - {s.category}</span>
@@ -350,19 +347,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
 
       <TimelineIndicators ranges={enabled} timelineStart={timelineStart} scrollRef={scrollRef} />
 
-      {/* Custom tooltip */}
-      {tooltip.visible && (
-        <div
-          className="tl-tooltip"
-          role="tooltip"
-          style={{
-            left: `clamp(132px, ${tooltip.x}px, calc(100vw - 132px))`,
-            top: `${tooltip.y}px`,
-          }}
-        >
-          {tooltip.text}
-        </div>
-      )}
+      <TimelineTooltip ref={tooltipRef} />
     </div>
   );
 };
