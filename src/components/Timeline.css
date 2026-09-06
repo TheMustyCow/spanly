@@ -165,8 +165,9 @@
 }
 
 .tl-day-cell.weekend {
-  background: var(--border-input);
-  color: var(--text);
+  /* background: var(--border-input); */
+  background: #111827;
+  color: var(--text-muted);
 }
 
 .tl-day-cell:hover,
