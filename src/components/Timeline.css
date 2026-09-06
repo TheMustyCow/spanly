@@ -1,6 +1,8 @@
 .timeline-card {
   --tl-label-width: 180px;
   --tl-day-height: 32px;
+  --tl-row-height: 45px;
+  position: relative;
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: var(--shadow);
@@ -181,7 +183,8 @@
 
 .tl-range-row {
   display: flex;
-  height: 44px;
+  height: var(--tl-row-height);
+  box-sizing: border-box;
   align-items: stretch;
   border-bottom: 1px solid var(--border-light);
 }
@@ -231,6 +234,40 @@
   position: relative;
   height: 100%;
   flex-shrink: 0;
+}
+
+/* Keep off-screen section hints at the visible edges, clear of the labels. */
+.tl-edge-indicators {
+  position: absolute;
+  top: calc(32px + var(--tl-day-height));
+  left: var(--tl-label-width);
+  right: 0;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.tl-edge-row {
+  position: relative;
+  height: var(--tl-row-height);
+}
+
+.tl-edge-indicator {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  pointer-events: auto;
+}
+
+.tl-edge-indicator.left {
+  left: 4px;
+}
+
+.tl-edge-indicator.right {
+  right: 4px;
 }
 
 /* vertical grid lines */

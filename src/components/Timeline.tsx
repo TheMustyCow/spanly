@@ -38,9 +38,75 @@ function formatMonth(date: Date): string {
   return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
 }
 
+function TimelineIndicators({ ranges, timelineStart, scrollRef }: {
+  ranges: SeasonRange[];
+  timelineStart: Date;
+  scrollRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const sections = useMemo(() => ranges.map((range) => range.ranges.map((section) => ({
+    start: daysBetween(timelineStart, parseDate(section.startDate)) * DAY_WIDTH,
+    end: (daysBetween(timelineStart, parseDate(section.endDate)) + 1) * DAY_WIDTH,
+  }))), [ranges, timelineStart]);
+  const [hidden, setHidden] = useState<{ left: boolean; right: boolean }[]>([]);
+
+  useEffect(() => {
+    const scroller = scrollRef.current;
+    if (!scroller) return;
+    let frame = 0;
+
+    function update() {
+      frame = 0;
+      if (!scroller) return;
+      const labelWidth = scroller.querySelector('.tl-header-labels')?.getBoundingClientRect().width ?? 0;
+      const left = scroller.scrollLeft;
+      const right = left + scroller.clientWidth - labelWidth;
+      const next = sections.map((row) => ({
+        left: row.some((section) => section.end <= left),
+        right: row.some((section) => section.start >= right),
+      }));
+      setHidden((prev) => prev.length === next.length && next.every((row, i) =>
+        row.left === prev[i].left && row.right === prev[i].right
+      ) ? prev : next);
+    }
+
+    function scheduleUpdate() {
+      if (!frame) frame = requestAnimationFrame(update);
+    }
+
+    const observer = new ResizeObserver(scheduleUpdate);
+    observer.observe(scroller);
+    scroller.addEventListener('scroll', scheduleUpdate, { passive: true });
+    scheduleUpdate();
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      scroller.removeEventListener('scroll', scheduleUpdate);
+    };
+  }, [sections, scrollRef]);
+
+  return (
+    <div className="tl-edge-indicators">
+      {ranges.map((range, i) => (
+        <div key={range.id} className="tl-edge-row" style={{ color: range.color }}>
+          {(['left', 'right'] as const).map((direction) => hidden[i]?.[direction] && (
+            <span
+              key={direction}
+              className={`tl-edge-indicator ${direction}`}
+              role="img"
+              aria-label={`${range.name}: more sections to the ${direction}`}
+              title={`More sections to the ${direction}`}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 
 export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
   const enabled = useMemo(() => ranges.filter((r) => r.enabled), [ranges]);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const [tooltip, setTooltip] = useState<{
     visible: boolean;
@@ -174,7 +240,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
 
   return (
     <div className="timeline-card">
-      <div className="timeline-scroll-wrapper" onScroll={hideTooltip}>
+      <div ref={scrollRef} className="timeline-scroll-wrapper" onScroll={hideTooltip}>
         <div className="timeline-content" style={{ width: `calc(var(--tl-label-width) + ${trackWidth}px)` }}>
           {/* Sticky header */}
           <div className="tl-sticky-header">
@@ -281,6 +347,8 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
           </div>
         </div>
       </div>
+
+      <TimelineIndicators ranges={enabled} timelineStart={timelineStart} scrollRef={scrollRef} />
 
       {/* Custom tooltip */}
       {tooltip.visible && (
