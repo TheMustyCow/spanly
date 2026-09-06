@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import type { SeasonRange } from '../types';
 import './Timeline.css';
 
@@ -8,6 +8,14 @@ interface TimelineProps {
 }
 
 const DAY_WIDTH = 36; // px — generous so day numbers are crisp and bars are readable
+
+interface TimelineDay {
+  num: number;
+  index: number;
+  weekday: string;
+  fullDate: string;
+  isWeekend: boolean;
+}
 
 /* ---------- date helpers ---------- */
 function parseDate(str: string): Date {
@@ -32,7 +40,7 @@ function formatMonth(date: Date): string {
 
 
 export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
-  const enabled = ranges.filter((r) => r.enabled);
+  const enabled = useMemo(() => ranges.filter((r) => r.enabled), [ranges]);
 
   const [tooltip, setTooltip] = useState<{
     visible: boolean;
@@ -43,10 +51,17 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
 
   const tooltipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function showTooltip(text: string, e: React.MouseEvent) {
+  useEffect(() => () => {
     if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+  }, []);
+
+  function showTooltip(text: string, e: React.MouseEvent | React.FocusEvent) {
+    if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = 'clientX' in e ? e.clientX : rect.left + rect.width / 2;
+    const y = 'clientY' in e ? e.clientY : rect.top;
     tooltipTimer.current = setTimeout(() => {
-      setTooltip({ visible: true, x: e.clientX, y: e.clientY - 12, text });
+      setTooltip({ visible: true, x, y: y - 12, text });
     }, 300);
   }
 
@@ -58,7 +73,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
 
   function hideTooltip() {
     if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
-    setTooltip((prev) => ({ ...prev, visible: false }));
+    setTooltip((prev) => prev.visible ? { ...prev, visible: false } : prev);
   }
 
   const {
@@ -74,7 +89,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
         totalDays: 0,
         trackWidth: 0,
         monthBlocks: [] as { name: string; startIndex: number; dayCount: number }[],
-        dayNumbers: [] as { num: number; index: number }[],
+        dayNumbers: [] as TimelineDay[],
         gridLines: [] as { index: number; isWeek: boolean; isMonth: boolean }[],
       };
     }
@@ -126,12 +141,18 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
     });
 
     // Day numbers and grid lines (one per day boundary, so total + 1 lines)
-    const days: { num: number; index: number }[] = [];
+    const days: TimelineDay[] = [];
     const lines: { index: number; isWeek: boolean; isMonth: boolean }[] = [];
     for (let i = 0; i <= total; i++) {
       const d = addDays(min, i);
       if (i < total) {
-        days.push({ num: d.getDate(), index: i });
+        days.push({
+          num: d.getDate(),
+          index: i,
+          weekday: d.toLocaleDateString(undefined, { weekday: 'long' }),
+          fullDate: d.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
+          isWeekend: d.getDay() === 0 || d.getDay() === 6,
+        });
       }
       lines.push({
         index: i,
@@ -151,16 +172,14 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
     );
   }
 
-  const contentWidth = 180 + trackWidth;
-
   return (
     <div className="timeline-card">
-      <div className="timeline-scroll-wrapper">
-        <div className="timeline-content" style={{ width: `${contentWidth}px` }}>
+      <div className="timeline-scroll-wrapper" onScroll={hideTooltip}>
+        <div className="timeline-content" style={{ width: `calc(var(--tl-label-width) + ${trackWidth}px)` }}>
           {/* Sticky header */}
           <div className="tl-sticky-header">
             <div className="tl-header-labels">
-                <div className="tl-corner tl-corner-top">Range</div>
+              <div className="tl-corner tl-corner-top">Range</div>
               <div className="tl-corner" />
             </div>
             <div className="tl-header-track" style={{ width: `${trackWidth}px` }}>
@@ -175,23 +194,31 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                       width: `${m.dayCount * DAY_WIDTH}px`,
                     }}
                   >
-                    {m.name}
+                    <span className="tl-month-label">{m.name}</span>
                   </div>
                 ))}
               </div>
               {/* Day numbers row */}
               <div className="tl-days">
                 {dayNumbers.map((d) => (
-                  <div
+                  <button
                     key={d.index}
-                    className="tl-day-cell"
+                    type="button"
+                    className={`tl-day-cell${d.isWeekend ? ' weekend' : ''}`}
+                    aria-label={d.fullDate}
                     style={{
                       left: `${d.index * DAY_WIDTH}px`,
                       width: `${DAY_WIDTH}px`,
                     }}
+                    onMouseEnter={(e) => showTooltip(d.weekday, e)}
+                    onMouseMove={moveTooltip}
+                    onMouseLeave={hideTooltip}
+                    onFocus={(e) => showTooltip(d.weekday, e)}
+                    onBlur={hideTooltip}
+                    onKeyDown={(e) => { if (e.key === 'Escape') hideTooltip(); }}
                   >
                     {d.num}
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -207,10 +234,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                 >
                   <div className="tl-row-label">
                     <span className="tl-dot" style={{ backgroundColor: s.color }} />
-                    <span className="tl-row-name">{s.name}</span>
-                    {s.category && (
-                      <span className="tl-row-category"></span>
-                    )}
+                    <span className="tl-row-name" title={s.name}>{s.name}</span>
                   </div>
                   <div className="tl-row-track" style={{ width: `${trackWidth}px` }}>
                     {/* vertical grid lines */}
@@ -262,8 +286,9 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
       {tooltip.visible && (
         <div
           className="tl-tooltip"
+          role="tooltip"
           style={{
-            left: `${tooltip.x}px`,
+            left: `clamp(132px, ${tooltip.x}px, calc(100vw - 132px))`,
             top: `${tooltip.y}px`,
           }}
         >

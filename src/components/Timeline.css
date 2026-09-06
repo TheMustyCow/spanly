@@ -1,9 +1,12 @@
 .timeline-card {
+  --tl-label-width: 180px;
+  --tl-day-height: 32px;
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: var(--shadow);
   border: 1px solid var(--border);
   overflow: hidden;
+  min-width: 0;
 }
 
 .timeline-card.empty {
@@ -64,8 +67,8 @@
 }
 
 .tl-header-labels {
-  width: 180px;
-  min-width: 180px;
+  width: var(--tl-label-width);
+  flex: 0 0 var(--tl-label-width);
   position: sticky;
   left: 0;
   z-index: 30;
@@ -75,7 +78,7 @@
 }
 
 .tl-corner {
-  height: 28px;
+  height: var(--tl-day-height);
   display: flex;
   align-items: center;
   padding: 0 16px;
@@ -95,7 +98,8 @@
 
 .tl-header-track {
   position: relative;
-  height: 60px; /* 32px month + 28px day numbers */
+  flex-shrink: 0;
+  height: calc(32px + var(--tl-day-height));
 }
 
 /* Month blocks */
@@ -111,7 +115,6 @@
   height: 100%;
   display: flex;
   align-items: center;
-  padding-left: 10px;
   font-size: 12px;
   font-weight: 600;
   color: var(--text);
@@ -120,14 +123,24 @@
   border-left: 1px solid var(--border-input);
   box-sizing: border-box;
   white-space: nowrap;
+}
+
+.tl-month-label {
+  position: sticky;
+  left: var(--tl-label-width);
+  padding: 0 10px;
+  max-width: 100%;
+  box-sizing: border-box;
   overflow: hidden;
+  background: var(--surface);
 }
 
 /* Day numbers */
 .tl-days {
   position: relative;
-  height: 28px;
+  height: var(--tl-day-height);
   border-bottom: 1px solid var(--border);
+  box-sizing: border-box;
 }
 
 .tl-day-cell {
@@ -137,11 +150,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 500;
   color: var(--text-muted);
   box-sizing: border-box;
-  border-left: 1px solid transparent;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent;
+  cursor: help;
+}
+
+.tl-day-cell.weekend {
+  background: var(--border-input);
+  color: var(--text);
+}
+
+.tl-day-cell:hover,
+.tl-day-cell:focus-visible {
+  color: var(--text-h);
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
 }
 
 /* ---------- body ---------- */
@@ -165,8 +195,8 @@
 }
 
 .tl-row-label {
-  width: 180px;
-  min-width: 180px;
+  width: var(--tl-label-width);
+  flex: 0 0 var(--tl-label-width);
   position: sticky;
   left: 0;
   z-index: 10;
@@ -195,20 +225,6 @@
 .tl-row-name {
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.tl-row-category {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-muted);
-  background: var(--surface);
-  padding: 2px 8px;
-  border-radius: 999px;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  margin-left: auto;
 }
 
 .tl-row-track {
@@ -281,7 +297,9 @@
   font-weight: 500;
   padding: 8px 14px;
   border-radius: 8px;
-  white-space: nowrap;
+  max-width: min(240px, calc(100vw - 24px));
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
   box-shadow: var(--shadow);
   transform: translate(-50%, -100%);
   animation: tooltipFadeIn 0.15s ease;
@@ -294,11 +312,14 @@
 
 /* ---------- responsive ---------- */
 @media (max-width: 768px) {
-  .tl-header-labels,
+  .timeline-card {
+    --tl-label-width: 132px;
+    --tl-day-height: 36px;
+  }
+
   .tl-row-label {
-    width: 140px;
-    min-width: 140px;
-    padding: 0 12px;
+    padding: 0 10px;
+    gap: 6px;
   }
 
   .tl-row-name {
@@ -308,5 +329,29 @@
   .tl-corner {
     padding: 0 12px;
     font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .timeline-card {
+    --tl-label-width: clamp(88px, 28vw, 112px);
+  }
+
+  .tl-row-label {
+    padding: 0 8px;
+  }
+
+  .tl-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .tl-row-name {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.25;
   }
 }

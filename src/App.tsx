@@ -4,7 +4,6 @@ import { SEED_DATA } from './data/seed';
 import { DEMO_DATA } from './data/demoData';
 import { ControlPanel } from './components/ControlPanel';
 import { Timeline } from './components/Timeline';
-import { SummaryCard } from './components/SummaryCard';
 import './App.css';
 
 const STORAGE_KEY = 'spanly-data-v3';
@@ -199,7 +198,6 @@ export default function App() {
       </header>
 
       <main className="app-layout">
-        <SummaryCard ranges={ranges} />
         <Timeline ranges={ranges} />
         <ControlPanel ranges={ranges} onUpdate={setRanges} />
       </main>

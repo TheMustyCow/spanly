@@ -1,12 +1,13 @@
 .control-panel {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
   align-items: start;
 }
 
 .cp-form-section,
 .cp-list-section {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -46,6 +47,7 @@
 .form-row input[type="text"],
 .form-row input[type="date"],
 .form-row select {
+  min-width: 0;
   padding: 10px 12px;
   border: 1px solid var(--border-input);
   border-radius: 8px;
@@ -98,6 +100,7 @@
 }
 
 .sub-range-field {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -105,6 +108,7 @@
 
 .sub-range-field input[type="text"],
 .sub-range-field input[type="date"] {
+  min-width: 0;
   padding: 8px 10px;
   border: 1px solid var(--border-input);
   border-radius: 6px;
@@ -419,11 +423,11 @@
 /* ---------- responsive ---------- */
 @media (max-width: 768px) {
   .control-panel {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .sub-range-row {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .sub-range-row .btn-icon {
