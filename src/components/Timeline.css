@@ -159,7 +159,7 @@
   border-left: 1px solid var(--border);
   border-radius: 0;
   background: transparent;
-  cursor: help;
+  cursor: default;
 }
 
 .tl-day-cell.weekend {
