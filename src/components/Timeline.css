@@ -165,9 +165,12 @@
 }
 
 .tl-day-cell.weekend {
-  /* background: var(--border-input); */
-  background: #111827;
+  background: #e5e7eb;
   color: var(--text-muted);
+}
+
+[data-theme="dark"] .tl-day-cell.weekend {
+  background: #111827;
 }
 
 .tl-day-cell:focus-visible {
