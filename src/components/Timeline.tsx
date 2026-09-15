@@ -17,6 +17,7 @@ interface TimelineDay {
   weekday: string;
   fullDate: string;
   isWeekend: boolean;
+  isToday: boolean;
 }
 
 /* ---------- date helpers ---------- */
@@ -209,6 +210,8 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
     const days: TimelineDay[] = [];
     const weekdayFormatter = new Intl.DateTimeFormat(undefined, { weekday: 'long' });
     const dateFormatter = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     for (let i = 0; i < total; i++) {
       const d = addDays(min, i);
       days.push({
@@ -217,6 +220,7 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
         weekday: weekdayFormatter.format(d),
         fullDate: dateFormatter.format(d),
         isWeekend: d.getDay() === 0 || d.getDay() === 6,
+        isToday: d.getTime() === today.getTime(),
       });
     }
 
@@ -263,8 +267,10 @@ export const Timeline: React.FC<TimelineProps> = ({ ranges }) => {
                   <button
                     key={d.index}
                     type="button"
-                    className={`tl-day-cell${d.isWeekend ? ' weekend' : ''}`}
+                    className={`tl-day-cell${d.isWeekend ? ' weekend' : ''}${d.isToday ? ' today' : ''}`}
                     aria-label={d.fullDate}
+                    aria-current={d.isToday ? 'date' : undefined}
+                    title={d.isToday ? `${d.fullDate} — Today` : undefined}
                     style={{
                       left: `${d.index * DAY_WIDTH}px`,
                       width: `${DAY_WIDTH}px`,
